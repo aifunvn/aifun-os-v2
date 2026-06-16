@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIFUN OS V2 — AI Business Operating System</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--bg2:#12121a;--bg3:#1a1a26;--border:#2a2a3a;
+  --text:#e8e8f0;--text2:#9898b0;--accent:#6c63ff;--accent2:#8b85ff;
+  --green:#22c55e;--blue:#3b82f6;--purple:#a855f7;--orange:#f97316;
+  --pink:#ec4899;--cyan:#06b6d4;--yellow:#eab308;--red:#ef4444;
+}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700}
+.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--purple));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.logo span{color:var(--accent2)}
+.header-right{display:flex;align-items:center;gap:10px}
+.badge{background:var(--bg3);border:1px solid var(--border);padding:4px 10px;border-radius:20px;font-size:11px;color:var(--text2)}
+.badge b{color:var(--green)}
+.nav-tabs{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;display:flex;gap:4px;overflow-x:auto}
+.nav-tab{padding:12px 18px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;user-select:none}
+.nav-tab:hover{color:var(--text)}
+.nav-tab.active{color:var(--accent2);border-bottom-color:var(--accent)}
+main{padding:24px;max-width:1400px;margin:0 auto}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+@media(max-width:800px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px 20px;display:flex;align-items:center;gap:14px}
+.stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.stat-value{font-size:24px;font-weight:700}
+.stat-label{font-size:12px;color:var(--text2);margin-top:2px}
+.stat-change{font-size:11px;margin-top:4px;color:var(--green)}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.section-title{font-size:20px;font-weight:700}
+.section-title span{color:var(--accent2)}
+.section-sub{font-size:13px;color:var(--text2);margin-top:2px}
+.skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:32px}
+@media(max-width:900px){.skills-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.skills-grid{grid-template-columns:1fr}}
+.skill-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.skill-card:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 8px 32px rgba(108,99,255,.15)}
+.skill-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad,var(--accent))}
+.skill-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.skill-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.skill-badge{font-size:10px;padding:3px 8px;border-radius:10px;font-weight:600;background:rgba(34,197,94,.15);color:var(--green)}
+.skill-name{font-size:16px;font-weight:700;margin-bottom:6px}
+.skill-desc{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px}
+.skill-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.skill-tag{background:var(--bg3);border:1px solid var(--border);padding:3px 8px;border-radius:6px;font-size:11px;color:var(--text2)}
+.skill-footer{display:flex;align-items:center;justify-content:space-between}
+.skill-stats{display:flex;gap:12px;font-size:11px;color:var(--text2)}
+.skill-stats b{color:var(--text)}
+.btn-launch{background:var(--accent);color:#fff;border:none;padding:7px 16px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-launch:hover{background:var(--accent2)}
+.prompts-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.search-box{flex:1;min-width:180px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:9px 14px;color:var(--text);font-size:13px;outline:none;transition:border .2s}
+.search-box:focus{border-color:var(--accent)}
+.filter-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:8px 14px;border-radius:10px;font-size:12px;cursor:pointer;transition:all .2s}
+.filter-btn.active,.filter-btn:hover{border-color:var(--accent);color:var(--accent2)}
+.prompts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.p-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;cursor:default;transition:all .2s}
+.p-card:hover{border-color:rgba(108,99,255,.4)}
+.p-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.p-cat{font-size:10px;padding:3px 8px;border-radius:6px;font-weight:600;text-transform:uppercase}
+.cat-marketing{background:rgba(59,130,246,.15);color:var(--blue)}
+.cat-sales{background:rgba(34,197,94,.15);color:var(--green)}
+.cat-automation{background:rgba(168,85,247,.15);color:var(--purple)}
+.p-title{font-size:14px;font-weight:600;margin-bottom:6px;line-height:1.4}
+.p-preview{font-size:12px;color:var(--text2);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.p-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
+.p-tags{display:flex;gap:4px;flex-wrap:wrap}
+.p-tag{background:var(--bg);border:1px solid var(--border);padding:2px 6px;border-radius:4px;font-size:10px;color:var(--text2)}
+.copy-btn{background:transparent;border:1px solid var(--border);color:var(--text2);padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;transition:all .2s}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent2)}
+.table-wrap{overflow-x:auto;margin-top:8px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--bg3);padding:10px 14px;text-align:left;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:hover td{background:rgba(108,99,255,.04)}
+.chip{display:inline-block;background:var(--bg3);border:1px solid var(--border);padding:3px 8px;border-radius:20px;font-size:11px;color:var(--text2)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:20px;width:100%;max-width:740px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;transform:scale(.95);transition:transform .25s}
+.overlay.open .modal{transform:scale(1)}
+.modal-hd{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:17px;font-weight:700;display:flex;align-items:center;gap:10px}
+.modal-close{background:var(--bg3);border:1px solid var(--border);color:var(--text2);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-close:hover{color:var(--text);border-color:var(--accent)}
+.modal-body{padding:22px 24px;overflow-y:auto;flex:1}
+.modal-ft{padding:14px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
+.fg{margin-bottom:16px}
+.fl{font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.5px}
+.fi,.fs,.ft{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:9px 13px;color:var(--text);font-size:13px;outline:none;transition:border .2s;font-family:inherit}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--accent)}
+.ft{resize:vertical;min-height:80px;line-height:1.6}
+.fs option{background:var(--bg2)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.output{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:14px;white-space:pre-wrap;font-size:13px;line-height:1.8;min-height:100px;display:none}
+.output.show{display:block}
+.out-actions{display:flex;gap:8px;margin-top:10px;justify-content:flex-end;display:none}
+.out-actions.show{display:flex}
+.btn{padding:9px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;border:none;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-secondary{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent2)}
+.btn-sm{padding:5px 12px;font-size:12px;border-radius:7px}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.toasts{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:11px 16px;font-size:13px;display:flex;align-items:center;gap:8px;animation:sIn .3s ease;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+@keyframes sIn{from{transform:translateX(120%);opacity:0}}
+.toast-item.ok{border-color:var(--green)}
+.toast-item.err{border-color:var(--red)}
+.page{display:none}
+.page.active{display:block}
+.ch-label{display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;color:var(--text)}
+input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🤖</div>
+    AIFUN <span>OS</span>
+  </div>
+  <div class="header-right">
+    <div class="badge">V2.0 <b>LIVE</b></div>
+    <div class="badge">Powered by <b>Claude AI</b></div>
+  </div>
+</header>
+
+<div class="nav-tabs">
+  <div class="nav-tab active" onclick="go('dashboard')">🏠 Dashboard</div>
+  <div class="nav-tab" onclick="go('skills')">⚡ Skills</div>
+  <div class="nav-tab" onclick="go('prompts')">📋 Prompts</div>
+  <div class="nav-tab" onclick="go('sops')">📁 SOPs</div>
+  <div class="nav-tab" onclick="go('workflows')">🔄 Workflows</div>
+</div>
+
+<main>
+
+<div class="page active" id="pg-dashboard">
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:rgba(108,99,255,.15)">⚡</div>
+      <div><div class="stat-value">6</div><div class="stat-label">AI Skills</div><div class="stat-change">↑ Sẵn sàng</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:rgba(34,197,94,.15)">📋</div>
+      <div><div class="stat-value">60+</div><div class="stat-label">Prompt Templates</div><div class="stat-change">↑ Marketing · Sales · Auto</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:rgba(249,115,22,.15)">🔄</div>
+      <div><div class="stat-value">3</div><div class="stat-label">Automation Flows</div><div class="stat-change">↑ Active</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:rgba(236,72,153,.15)">🚀</div>
+      <div><div class="stat-value">100%</div><div class="stat-label">AI Powered</div><div class="stat-change">↑ Claude AI</div></div>
+    </div>
+  </div>
+  <div class="section-header">
+    <div>
+      <div class="section-title">⚡ AI <span>Skills</span></div>
+      <div class="section-sub">6 công cụ AI chuyên nghiệp — click để sử dụng ngay</div>
+    </div>
+  </div>
+  <div id="skills-dash"></div>
+</div>
+
+<div class="page" id="pg-skills">
+  <div class="section-header">
+    <div><div class="section-title">⚡ AI <span>Skills</span></div><div class="section-sub">Tất cả công cụ AI — click để mở và sử dụng</div></div>
+  </div>
+  <div id="skills-page"></div>
+</div>
+
+<div class="page" id="pg-prompts">
+  <div class="section-header">
+    <div><div class="section-title">📋 Prompt <span>Library</span></div><div class="section-sub">60+ prompt templates cho Marketing, Sales và Automation</div></div>
+  </div>
+  <div class="prompts-bar">
+    <input class="search-box" type="text" placeholder="🔍 Tìm prompt..." id="pSearch" oninput="renderPrompts()">
+    <button class="filter-btn active" onclick="setF('all',this)">Tất cả</button>
+    <button class="filter-btn" onclick="setF('marketing',this)">Marketing</button>
+    <button class="filter-btn" onclick="setF('sales',this)">Sales</button>
+    <button class="filter-btn" onclick="setF('automation',this)">Automation</button>
+  </div>
+  <div class="prompts-grid" id="pGrid"></div>
+</div>
+
+<div class="page" id="pg-sops">
+  <div class="section-header">
+    <div><div class="section-title">📁 <span>SOP</span> Library</div><div class="section-sub">Quy trình chuẩn hoá cho doanh nghiệp</div></div>
+    <button class="btn btn-primary" onclick="openM('sop')">+ Tạo SOP mới</button>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Tên SOP</th><th>Bộ phận</th><th>Trạng thái</th><th>Cập nhật</th><th>Owner</th><th>Tần suất</th></tr></thead>
+      <tbody id="sopsTbl"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="page" id="pg-workflows">
+  <div class="section-header">
+    <div><div class="section-title">🔄 <span>Automation</span> Workflows</div><div class="section-sub">Các luồng tự động hoá đang hoạt động</div></div>
+  </div>
+  <div class="prompts-grid" id="wfGrid"></div>
+</div>
+
+</main>
+
+<div class="overlay" id="m-sop">
+<div class="modal">
+  <div class="modal-hd">
+    <div class="modal-title">📋 SOP Builder</div>
+    <button class="modal-close" onclick="closeM('sop')">✕</button>
+  </div>
+  <div class="modal-body">
+    <div class="fr">
+      <div class="fg"><label class="fl">Tên quy trình</label><input class="fi" id="sop-name" placeholder="VD: Onboard khách hàng mới"></div>
+      <div class="fg"><label class="fl">Bộ phận</label><select class="fs" id="sop-dept"><option>Marketing</option><option>Sales</option><option>Operations</option><option>HR</option><option>Customer Success</option><option>Finance</option></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Mục tiêu SOP</label><input class="fi" id="sop-goal" placeholder="VD: Onboard 100% trong 24h"></div>
+      <div class="fg"><label class="fl">Tần suất</label><select class="fs" id="sop-freq"><option>Hàng ngày</option><option>Hàng tuần</option><option>Hàng tháng</option><option>Khi có sự kiện</option><option>Theo nhu cầu</option></select></div>
+    </div>
+    <div class="fg"><label class="fl">Mô tả chi tiết / Bối cảnh</label><textarea class="ft" id="sop-desc" placeholder="Mô tả ngữ cảnh, các bước hiện tại, công cụ đang dùng..."></textarea></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Người chịu trách nhiệm</label><input class="fi" id="sop-owner" placeholder="VD: Sales Manager"></div>
+      <div class="fg"><label class="fl">KPI đo lường</label><input class="fi" id="sop-kpi" placeholder="VD: 100% onboard trong 24h"></div>
+    </div>
+    <pre class="output" id="sop-out"></pre>
+    <div class="out-actions" id="sop-oa">
+      <button class="btn btn-secondary btn-sm" onclick="cpOut('sop-out')">📋 Copy</button>
+      <button class="btn btn-sm" style="background:var(--green);color:#fff" onclick="saveSheets('sop')">💾 Lưu Sheets</button>
+    </div>
+  </div>
+  <div class="modal-ft">
+    <button class="btn btn-secondary" onclick="closeM('sop')">Đóng</button>
+    <button class="btn btn-primary" id="sop-btn" onclick="run('sop')">✨ Tạo SOP</button>
+  </div>
+</div>
+</div>
+
+<div class="overlay" id="m-content">
+<div class="modal">
+  <div class="modal-hd">
+    <div class="modal-title">✍️ Content Factory</div>
+    <button class="modal-close" onclick="closeM('content')">✕</button>
+  </div>
+  <div class="modal-body">
+    <div class="fg"><label class="fl">Thương hiệu / Doanh nghiệp</label><input class="fi" id="cf-brand" placeholder="VD: AIFUN — AI cho SME Việt Nam"></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Chủ đề content</label><input class="fi" id="cf-topic" placeholder="VD: 5 lợi ích của AI trong bán hàng"></div>
+      <div class="fg"><label class="fl">Mục tiêu</label><select class="fs" id="cf-goal"><option>Tăng nhận diện thương hiệu</option><option>Tạo leads</option><option>Giáo dục khách hàng</option><option>Tăng doanh số</option><option>Tăng engagement</option></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Khách hàng mục tiêu</label><input class="fi" id="cf-audience" placeholder="VD: CEO SME 35-50 tuổi"></div>
+      <div class="fg"><label class="fl">Tone giọng văn</label><select class="fs" id="cf-tone"><option>Chuyên nghiệp nhưng thân thiện</option><option>Chuyên gia / Authority</option><option>Vui vẻ / Năng động</option><option>Truyền cảm hứng</option><option>Giáo dục / Informative</option></select></div>
+    </div>
+    <div class="fg"><label class="fl">Kênh cần tạo content</label>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:7px">
+        <label class="ch-label"><input type="checkbox" id="ch-fb" checked> Facebook</label>
+        <label class="ch-label"><input type="checkbox" id="ch-yt"> YouTube</label>
+        <label class="ch-label"><input type="checkbox" id="ch-tt"> TikTok</label>
+        <label class="ch-label"><input type="checkbox" id="ch-em"> Email</label>
+        <label class="ch-label"><input type="checkbox" id="ch-zl"> Zalo</label>
+      </div>
+    </div>
+    <pre class="output" id="cf-out"></pre>
+    <div class="out-actions" id="cf-oa"><button class="btn btn-secondary btn-sm" onclick="cpOut('cf-out')">📋 Copy</button></div>
+  </div>
+  <div class="modal-ft">
+    <button class="btn btn-secondary" onclick="closeM('content')">Đóng</button>
+    <button class="btn btn-primary" id="cf-btn" onclick="run('content')">✨ Tạo Content</button>
+  </div>
+</div>
+</div>
+
+<div class="overlay" id="m-email">
+<div class="modal">
+  <div class="modal-hd">
+    <div class="modal-title">📧 Email Automation</div>
+    <button class="modal-close" onclick="closeM('email')">✕</button>
+  </div>
+  <div class="modal-body">
+    <div class="fr">
+      <div class="fg"><label class="fl">Doanh nghiệp</label><input class="fi" id="em-brand" placeholder="Tên công ty / thương hiệu"></div>
+      <div class="fg"><label class="fl">Sản phẩm / Dịch vụ</label><input class="fi" id="em-product" placeholder="VD: Phần mềm CRM cho SME"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Loại chuỗi email</label><select class="fs" id="em-type"><option>Welcome Series (Lead mới)</option><option>Nurture Sequence</option><option>Onboarding (Khách mới)</option><option>Re-engagement</option><option>Sales Sequence</option><option>Post-purchase</option></select></div>
+      <div class="fg"><label class="fl">Số email trong chuỗi</label><select class="fs" id="em-count"><option>3 emails</option><option>5 emails</option><option>7 emails</option><option>10 emails</option></select></div>
+    </div>
+    <div class="fg"><label class="fl">Mục tiêu cuối chuỗi</label><input class="fi" id="em-goal" placeholder="VD: Đặt lịch demo / Mua sản phẩm X"></div>
+    <div class="fg"><label class="fl">Thông tin về khách hàng</label><textarea class="ft" id="em-audience" placeholder="Pain points, ngành nghề, quy mô..." style="min-height:65px"></textarea></div>
+    <pre class="output" id="em-out"></pre>
+    <div class="out-actions" id="em-oa"><button class="btn btn-secondary btn-sm" onclick="cpOut('em-out')">📋 Copy</button></div>
+  </div>
+  <div class="modal-ft">
+    <button class="btn btn-secondary" onclick="closeM('email')">Đóng</button>
+    <button class="btn btn-primary" id="em-btn" onclick="run('email')">✨ Tạo Email Sequence</button>
+  </div>
+</div>
+</div>
+
+<div class="overlay" id="m-crm">
+<div class="modal">
+  <div class="modal-hd">
+    <div class="modal-title">🤝 CRM AI Assistant</div>
+    <button class="modal-close" onclick="closeM('crm')">✕</button>
+  </div>
+  <div class="modal-body">
+    <div class="fr">
+      <div class="fg"><label class="fl">Tên khách hàng</label><input class="fi" id="crm-name" placeholder="VD: Anh Minh — CEO ABC Corp"></div>
+      <div class="fg"><label class="fl">Giai đoạn pipeline</label><select class="fs" id="crm-stage"><option>New Lead</option><option>Contacted</option><option>Qualified</option><option>Proposal Sent</option><option>Negotiation</option><option>Closed Won</option><option>Closed Lost</option></select></div>
+    </div>
+    <div class="fg"><label class="fl">Thông tin về khách hàng</label><textarea class="ft" id="crm-info" placeholder="Ngành nghề, quy mô, vấn đề đang gặp, những gì đã biết..."></textarea></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Sản phẩm quan tâm</label><input class="fi" id="crm-product" placeholder="VD: Gói AI Automation 12 tháng"></div>
+      <div class="fg"><label class="fl">Cần AI hỗ trợ gì?</label><select class="fs" id="crm-need"><option>Phân tích lead & gợi ý tiếp cận</option><option>Viết tin nhắn follow-up</option><option>Tạo email cá nhân hoá</option><option>Script cuộc gọi</option><option>Xử lý từ chối</option><option>Kịch bản chốt deal</option></select></div>
+    </div>
+    <pre class="output" id="crm-out"></pre>
+    <div class="out-actions" id="crm-oa"><button class="btn btn-secondary btn-sm" onclick="cpOut('crm-out')">📋 Copy</button></div>
+  </div>
+  <div class="modal-ft">
+    <button class="btn btn-secondary" onclick="closeM('crm')">Đóng</button>
+    <button class="btn btn-primary" id="crm-btn" onclick="run('crm')">✨ Phân tích & Tư vấn</button>
+  </div>
+</div>
+</div>
+
+<div class="overlay" id="m-webinar">
+<div class="modal">
+  <div class="modal-hd">
+    <div class="modal-title">🎙️ Webinar Builder</div>
+    <button class="modal-close" onclick="closeM('webinar')">✕</button>
+  </div>
+  <div class="modal-body">
+    <div class="fg"><label class="fl">Chủ đề webinar</label><input class="fi" id="wb-topic" placeholder="VD: Tự động hoá 80% công việc bán hàng với AI"></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Offer sau webinar</label><input class="fi" id="wb-offer" placeholder="VD: Khoá học AI Business OS — 5 triệu"></div>
+      <div class="fg"><label class="fl">Thời lượng</label><select class="fs" id="wb-duration"><option>60 phút</option><option>90 phút</option><option>2 giờ</option><option>Half day (4h)</option></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Đối tượng tham dự</label><input class="fi" id="wb-audience" placeholder="VD: CEO/Owner SME 30-50 tuổi"></div>
+      <div class="fg"><label class="fl">Cần tạo gì?</label><select class="fs" id="wb-need"><option>Toàn bộ (Outline + Script + Email)</option><option>Outline & cấu trúc</option><option>Script chi tiết</option><option>Email trước webinar</option><option>Email follow-up sau webinar</option><option>Landing page copy</option></select></div>
+    </div>
+    <div class="fg"><label class="fl">Điểm khác biệt / USP</label><textarea class="ft" id="wb-usp" placeholder="Điều gì làm webinar/sản phẩm của bạn khác biệt?" style="min-height:65px"></textarea></div>
+    <pre class="output" id="wb-out"></pre>
+    <div class="out-actions" id="wb-oa"><button class="btn btn-secondary btn-sm" onclick="cpOut('wb-out')">📋 Copy</button></div>
+  </div>
+  <div class="modal-ft">
+    <button class="btn btn-secondary" onclick="closeM('webinar')">Đóng</button>
+    <button class="btn btn-primary" id="wb-btn" onclick="run('webinar')">✨ Tạo Webinar Plan</button>
+  </div>
+</div>
+</div>
+
+<div class="overlay" id="m-sales">
+<div class="modal">
+  <div class="modal-hd">
+    <div class="modal-title">💰 Sales Script Generator</div>
+    <button class="modal-close" onclick="closeM('sales')">✕</button>
+  </div>
+  <div class="modal-body">
+    <div class="fr">
+      <div class="fg"><label class="fl">Sản phẩm / Dịch vụ</label><input class="fi" id="ss-product" placeholder="VD: Phần mềm quản lý nhà hàng"></div>
+      <div class="fg"><label class="fl">Giá bán</label><input class="fi" id="ss-price" placeholder="VD: 2.990.000đ/tháng"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Kênh bán hàng</label><select class="fs" id="ss-channel"><option>Telesales (gọi điện)</option><option>Zalo / Messenger</option><option>Gặp mặt trực tiếp</option><option>Zoom / Online meeting</option><option>Email</option></select></div>
+      <div class="fg"><label class="fl">Đối tượng khách hàng</label><input class="fi" id="ss-target" placeholder="VD: Chủ nhà hàng / Quán cafe"></div>
+    </div>
+    <div class="fg"><label class="fl">Pain points của khách hàng</label><textarea class="ft" id="ss-pain" placeholder="Khách hàng đang gặp vấn đề gì mà sản phẩm bạn giải quyết?" style="min-height:65px"></textarea></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Từ chối hay gặp nhất</label><input class="fi" id="ss-objection" placeholder="VD: Đắt quá / Chưa cần / Để suy nghĩ thêm"></div>
+      <div class="fg"><label class="fl">Loại script</label><select class="fs" id="ss-type"><option>Script đầy đủ (mở đầu → chốt)</option><option>Chỉ phần mở đầu</option><option>Xử lý từ chối</option><option>Kỹ thuật chốt deal</option><option>Follow-up script</option></select></div>
+    </div>
+    <pre class="output" id="ss-out"></pre>
+    <div class="out-actions" id="ss-oa"><button class="btn btn-secondary btn-sm" onclick="cpOut('ss-out')">📋 Copy</button></div>
+  </div>
+  <div class="modal-ft">
+    <button class="btn btn-secondary" onclick="closeM('sales')">Đóng</button>
+    <button class="btn btn-primary" id="ss-btn" onclick="run('sales')">✨ Tạo Sales Script</button>
+  </div>
+</div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbylB_9Yn_Q6825V2jFdXbMLrpp5A_pw_0jPlCl_Eg4Ou7mOFsibvdT0EP00gVMBC69myw/exec';
+
+const SKILLS = [
+  {id:'sop',icon:'📋',name:'SOP Builder',desc:'Tạo quy trình chuẩn (SOP) chuyên nghiệp cho bất kỳ bộ phận nào. Cấu trúc đầy đủ, checklist và KPI.',tags:['Operations','Claude','~5 phút'],uses:342,rating:5.0,grad:'linear-gradient(90deg,#6c63ff,#a855f7)',bg:'rgba(108,99,255,.15)'},
+  {id:'content',icon:'✍️',name:'Content Factory',desc:'Sản xuất hàng loạt content Facebook, YouTube, TikTok, Email, Zalo từ 1 chủ đề. Giảm 80% thời gian.',tags:['Marketing','Claude','~3 phút'],uses:518,rating:5.0,grad:'linear-gradient(90deg,#f97316,#eab308)',bg:'rgba(249,115,22,.15)'},
+  {id:'email',icon:'📧',name:'Email Automation',desc:'Xây dựng chuỗi email marketing tự động: Welcome, Nurture, Sales, Re-engagement. Tăng conversion 3-5x.',tags:['Email','Claude','~7 phút'],uses:276,rating:4.9,grad:'linear-gradient(90deg,#3b82f6,#06b6d4)',bg:'rgba(59,130,246,.15)'},
+  {id:'crm',icon:'🤝',name:'CRM AI Assistant',desc:'Phân tích lead, tạo kịch bản chăm sóc cá nhân hoá, gợi ý follow-up thông minh. Tăng win rate.',tags:['Sales','Claude','~4 phút'],uses:193,rating:4.8,grad:'linear-gradient(90deg,#22c55e,#06b6d4)',bg:'rgba(34,197,94,.15)'},
+  {id:'webinar',icon:'🎙️',name:'Webinar Builder',desc:'Lên kế hoạch toàn bộ webinar: landing page copy, script, slide outline, email trước và sau.',tags:['Webinar','Claude','~10 phút'],uses:147,rating:5.0,grad:'linear-gradient(90deg,#a855f7,#ec4899)',bg:'rgba(168,85,247,.15)'},
+  {id:'sales',icon:'💰',name:'Sales Script Generator',desc:'Kịch bản bán hàng chuyên nghiệp cho Telesales, Zalo, gặp mặt. Xử lý từ chối và chốt deal.',tags:['Sales','Claude','~5 phút'],uses:389,rating:4.9,grad:'linear-gradient(90deg,#ef4444,#f97316)',bg:'rgba(239,68,68,.15)'},
+];
+
+const PROMPTS = [
+  {id:'mkt-001',title:'Chiến lược Content Marketing tháng',cat:'marketing',content:'Bạn là Content Strategist chuyên marketing cho SME Việt Nam.\n\nLập kế hoạch content marketing tháng tới cho:\n- Doanh nghiệp: [TÊN]\n- Ngành: [NGÀNH]\n- Mục tiêu: [MỤC TIÊU]\n- Kênh: [KÊNH]\n\nXây dựng:\n1. 4 chủ đề content trụ cột\n2. Lịch đăng 20 bài/tháng\n3. Format cho từng kênh\n4. KPI đo lường cụ thể',tags:['content','strategy','monthly'],uses:127,rating:5},
+  {id:'mkt-002',title:'Email Marketing Giới Thiệu Sản Phẩm',cat:'marketing',content:'Viết email marketing giới thiệu sản phẩm [TÊN SP].\n\nThông tin:\n- Sản phẩm: [MÔ TẢ]\n- Lợi ích: [3 LỢI ÍCH CHÍNH]\n- CTA: [HÀNH ĐỘNG MONG MUỐN]\n\nOutput cần có:\n- Subject line A/B test\n- Preview text\n- Body email đầy đủ với storytelling\n- CTA button text',tags:['email','product','launch'],uses:89,rating:5},
+  {id:'mkt-003',title:'Facebook Ad Copy 3 Phiên Bản',cat:'marketing',content:'Tạo 3 phiên bản Facebook Ad copy cho:\n- Sản phẩm: [TÊN]\n- Target: [ĐỐI TƯỢNG]\n- Ngân sách hint: [GIỚI HẠN KÝ TỰ]\n\nMỗi phiên bản dùng emotion trigger khác nhau:\nV1: Pain/Problem\nV2: Desire/Dream\nV3: Social Proof/FOMO\n\nMỗi phiên bản có: Hook + Body + CTA',tags:['facebook','ads','copy'],uses:214,rating:5},
+  {id:'mkt-004',title:'Phân tích Đối Thủ Cạnh Tranh',cat:'marketing',content:'Phân tích đối thủ cho [TÊN CÔNG TY] ngành [NGÀNH].\n\nĐối thủ: [LIST]\n\nPhân tích:\n1. Điểm mạnh/yếu từng đối thủ\n2. Chiến lược marketing của họ\n3. Gap market chưa khai thác\n4. Cơ hội differentiation\n5. Khuyến nghị chiến lược cụ thể',tags:['competitor','analysis','strategy'],uses:76,rating:5},
+  {id:'mkt-005',title:'Kịch Bản Video TikTok/Reels 60s',cat:'marketing',content:'Viết script video 60 giây cho [CHỦ ĐỀ].\n\nThương hiệu: [TÊN]\nMục tiêu: [VIEWS/FOLLOW/SALES]\nAudience: [ĐỐI TƯỢNG]\n\nOutput:\n- Hook 3 giây (không thể bỏ qua)\n- Nội dung chính 45 giây\n- CTA 12 giây\n- Caption + hashtags\n- B-roll suggestions',tags:['video','tiktok','script'],uses:156,rating:5},
+  {id:'mkt-006',title:'Content Calendar 4 Tuần',cat:'marketing',content:'Tạo content calendar 4 tuần cho [THƯƠNG HIỆU].\n\nThông tin:\n- Ngành: [NGÀNH]\n- Kênh chính: [KÊNH]\n- Tần suất: [X bài/tuần]\n- Mục tiêu: [MỤC TIÊU]\n\nOutput: Bảng lịch đăng với:\n- Ngày/giờ đăng\n- Chủ đề\n- Format\n- CTA',tags:['content','calendar','planning'],uses:94,rating:5},
+  {id:'mkt-007',title:'Zalo OA Broadcast Message',cat:'marketing',content:'Viết 5 phiên bản Zalo broadcast message cho [CHIẾN DỊCH].\n\nDoanh nghiệp: [TÊN]\nMục tiêu: [MỤC TIÊU]\nOffer: [OFFER]\nDeadline: [DEADLINE]\n\nMỗi phiên bản:\n- Khác nhau về angle\n- Dưới 300 ký tự\n- CTA rõ ràng\n- Emoji phù hợp',tags:['zalo','broadcast','message'],uses:112,rating:5},
+  {id:'sal-001',title:'Script Telesales Mở Đầu Cuộc Gọi',cat:'sales',content:'Viết script mở đầu telesales cho [SẢN PHẨM].\n\nThông tin:\n- Người gọi: [TÊN/VỊ TRÍ]\n- Đối tượng: [KHÁCH HÀNG]\n- Hook: [VẤN ĐỀ GIẢI QUYẾT]\n\nBao gồm:\n1. Chào hỏi chuyên nghiệp\n2. Permission to continue\n3. Value proposition 30 giây\n4. Câu hỏi khám phá\n5. Xử lý "không có thời gian"',tags:['telesales','script','opening'],uses:203,rating:5},
+  {id:'sal-002',title:'Email Follow-up Sau Cuộc Gặp',cat:'sales',content:'Viết email follow-up sau cuộc gặp/demo.\n\nThông tin:\n- Khách: [TÊN/CÔNG TY]\n- Điểm đã thảo luận: [NỘI DUNG]\n- Concern: [VẤN ĐỀ]\n- Next step: [ACTION]\n\nEmail cần:\n- Warm, professional\n- Recap nhanh\n- Address concern cụ thể\n- Clear CTA với deadline',tags:['follow-up','email','meeting'],uses:167,rating:5},
+  {id:'sal-003',title:'Proposal Template Chuyên Nghiệp',cat:'sales',content:'Tạo proposal bán hàng cho:\n\nKhách: [TÊN CÔNG TY]\nNgành: [NGÀNH]\nVấn đề: [PAIN POINT]\nSản phẩm: [GÓI/SẢN PHẨM]\nGiá: [GIÁ TRỊ]\n\nCấu trúc:\n1. Executive Summary\n2. Understanding of Problem\n3. Proposed Solution\n4. Investment & ROI\n5. Timeline\n6. Next Steps\n7. Social Proof',tags:['proposal','document','sales'],uses:94,rating:5},
+  {id:'sal-004',title:'Xử Lý Từ Chối "Đắt Quá"',cat:'sales',content:'Tạo 5 cách xử lý từ chối "Đắt quá" cho [SẢN PHẨM] giá [GIÁ].\n\nThông tin:\n- Lợi ích chính: [LỢI ÍCH]\n- ROI kỳ vọng: [CON SỐ]\n- Case study: [VÍ DỤ]\n\nMỗi cách tiếp cận khác nhau:\n- Reframe giá trị\n- Break down giá\n- So sánh chi phí không làm\n- Payment options\n- Urgency/Scarcity',tags:['objection','price','sales'],uses:145,rating:5},
+  {id:'sal-005',title:'Kịch Bản Chốt Deal Cuối Tháng',cat:'sales',content:'Viết kịch bản chốt deal cho leads chưa quyết định sau [X] ngày.\n\nThông tin:\n- Sản phẩm: [SẢN PHẨM]\n- Lý do chưa mua: [LÝ DO]\n- Incentive cuối tháng: [OFFER]\n\nBao gồm:\n- Message Zalo\n- Email\n- Script gọi điện\n- Xử lý "để suy nghĩ thêm"\n- Hard close technique',tags:['closing','deal','sales'],uses:178,rating:5},
+  {id:'aut-001',title:'Thiết kế Workflow Make.com',cat:'automation',content:'Thiết kế workflow Make.com cho:\n\nMục tiêu: [MÔ TẢ QUY TRÌNH]\nTrigger: [SỰ KIỆN BẮT ĐẦU]\nApps: [LIST APPS]\nOutput: [KẾT QUẢ]\nGói Make: [FREE/CORE/PRO]\n\nCung cấp:\n1. Sơ đồ workflow từng bước\n2. Setup guide chi tiết\n3. Error handling rules\n4. Testing checklist\n5. Optimization tips',tags:['make','workflow','automation'],uses:112,rating:5},
+  {id:'aut-002',title:'Google Apps Script Automation',cat:'automation',content:'Viết Google Apps Script để [MÔ TẢ NHIỆM VỤ].\n\nThông tin:\n- Input: [NGUỒN DỮ LIỆU]\n- Xử lý: [LOGIC]\n- Output: [KẾT QUẢ]\n- Trigger: [LOẠI TRIGGER]\n\nCung cấp:\n1. Code hoàn chỉnh với comments\n2. CONFIG section dễ tuỳ chỉnh\n3. Hướng dẫn cài đặt step-by-step\n4. Setup trigger\n5. Testing & debugging guide',tags:['apps-script','google','code'],uses:87,rating:5},
+  {id:'aut-003',title:'Thiết kế AI Agent cho Doanh nghiệp',cat:'automation',content:'Thiết kế AI Agent cho:\n\nMục tiêu: [NHIỆM VỤ]\nKênh: [ZALO/WEB/MESSENGER]\nKnowledge: [TÀI LIỆU/FAQ]\nIntegration: [CRM/SHEETS]\n\nCung cấp:\n1. System prompt hoàn chỉnh\n2. Conversation flow diagram\n3. Tool definitions\n4. Edge case handling\n5. Deployment & monitoring guide',tags:['AI-agent','chatbot','automation'],uses:143,rating:5},
+];
+
+const SOPS = [
+  {id:'sop-m01',name:'Lập kế hoạch content tháng',dept:'Marketing',updated:'01/06/2026',owner:'Marketing Lead',freq:'Hàng tháng'},
+  {id:'sop-s01',name:'Quy trình tiếp nhận lead mới',dept:'Sales',updated:'05/06/2026',owner:'Sales Manager',freq:'Hàng ngày'},
+  {id:'sop-cs01',name:'Onboarding khách hàng mới',dept:'Customer Success',updated:'10/06/2026',owner:'CS Manager',freq:'Khi có KH mới'},
+  {id:'sop-o01',name:'Báo cáo KPI hàng tuần',dept:'Operations',updated:'02/06/2026',owner:'CEO',freq:'Hàng tuần'},
+];
+
+const WORKFLOWS = [
+  {id:'wf-01',icon:'🔔',name:'Lead Capture → CRM → Notify',desc:'Tự động sync lead từ Facebook Ads vào Sheets, phân công sales và gửi Zalo notification trong 2 phút.',tags:['make','facebook','zalo'],runs:'1.245/tháng',saved:'48h'},
+  {id:'wf-02',icon:'📧',name:'Email Welcome Sequence',desc:'Chuỗi 5 email tự động cho lead mới: chào mừng, value, social proof, offer, follow-up.',tags:['email','nurture','auto'],runs:'876/tháng',saved:'32h'},
+  {id:'wf-03',icon:'📊',name:'Daily KPI Report → Zalo',desc:'Tổng hợp số liệu từ Sheets và gửi báo cáo KPI lên nhóm Zalo lúc 7h mỗi sáng tự động.',tags:['reporting','zalo','sheets'],runs:'30/tháng',saved:'10h'},
+];
+
+function renderSkills(containerId) {
+  const c = document.getElementById(containerId);
+  c.innerHTML = `<div class="skills-grid">${SKILLS.map(s => `
+    <div class="skill-card" style="--grad:${s.grad}" onclick="openM('${s.id}')">
+      <div class="skill-top">
+        <div class="skill-icon" style="background:${s.bg}">${s.icon}</div>
+        <div class="skill-badge">Active</div>
+      </div>
+      <div class="skill-name">${s.name}</div>
+      <div class="skill-desc">${s.desc}</div>
+      <div class="skill-meta">${s.tags.map(t=>`<span class="skill-tag">${t}</span>`).join('')}</div>
+      <div class="skill-footer">
+        <div class="skill-stats">
+          <span>⭐ <b>${s.rating}</b></span>
+          <span>🔥 <b>${s.uses}</b> lần</span>
+        </div>
+        <button class="btn-launch" onclick="event.stopPropagation();openM('${s.id}')">Dùng ngay →</button>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+let pFilter = 'all';
+function renderPrompts() {
+  const q = (document.getElementById('pSearch')?.value||'').toLowerCase();
+  const list = PROMPTS.filter(p => {
+    const mc = pFilter==='all' || p.cat===pFilter;
+    const mq = !q || p.title.toLowerCase().includes(q) || p.tags.join(' ').includes(q);
+    return mc && mq;
+  });
+  document.getElementById('pGrid').innerHTML = list.length ? list.map(p => `
+    <div class="p-card">
+      <div class="p-card-top">
+        <span class="p-cat cat-${p.cat}">${p.cat}</span>
+        <span style="font-size:11px;color:var(--text2)">⭐ ${p.rating}</span>
+      </div>
+      <div class="p-title">${p.title}</div>
+      <div class="p-preview">${p.content}</div>
+      <div class="p-footer">
+        <div class="p-tags">${p.tags.slice(0,3).map(t=>`<span class="p-tag">${t}</span>`).join('')}</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;color:var(--text2)">🔥 <b style="color:var(--yellow)">${p.uses}</b></span>
+          <button class="copy-btn" onclick="cpPrompt('${p.id}')">Copy</button>
+        </div>
+      </div>
+    </div>`).join('') : '<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text2)"><div style="font-size:48px">🔍</div><p style="margin-top:12px">Không tìm thấy prompt phù hợp</p></div>';
+}
+function setF(cat,btn){
+  pFilter=cat;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPrompts();
+}
+function cpPrompt(id){
+  const p=PROMPTS.find(x=>x.id===id);
+  if(!p)return;
+  navigator.clipboard.writeText(p.content).then(()=>toast('📋 Đã copy prompt!'));
+}
+
+function renderSOPs(){
+  document.getElementById('sopsTbl').innerHTML=SOPS.map(s=>`
+    <tr>
+      <td><b>${s.name}</b><br><span style="font-size:11px;color:var(--text2)">${s.id}</span></td>
+      <td><span class="chip">${s.dept}</span></td>
+      <td><span style="font-size:11px;color:var(--green);background:rgba(34,197,94,.1);padding:3px 8px;border-radius:10px;font-weight:600">● Active</span></td>
+      <td style="color:var(--text2);font-size:12px">${s.updated}</td>
+      <td>${s.owner}</td>
+      <td style="font-size:12px;color:var(--text2)">${s.freq}</td>
+    </tr>`).join('');
+}
+
+function renderWorkflows(){
+  document.getElementById('wfGrid').innerHTML=WORKFLOWS.map(w=>`
+    <div class="p-card">
+      <div class="p-card-top"><span style="font-size:26px">${w.icon}</span><span style="font-size:11px;color:var(--green);background:rgba(34,197,94,.1);padding:3px 8px;border-radius:10px;font-weight:600">● Active</span></div>
+      <div class="p-title" style="margin-top:10px">${w.name}</div>
+      <div class="p-preview">${w.desc}</div>
+      <div class="p-footer" style="margin-top:12px">
+        <div class="p-tags">${w.tags.map(t=>`<span class="p-tag">${t}</span>`).join('')}</div>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:12px;font-size:12px;color:var(--text2)">
+        <span>🔄 ${w.runs}</span><span>⏱ tiết kiệm ${w.saved}</span>
+      </div>
+    </div>`).join('');
+}
+
+function go(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('pg-'+page).classList.add('active');
+  const map={dashboard:0,skills:1,prompts:2,sops:3,workflows:4};
+  if(map[page]!==undefined) document.querySelectorAll('.nav-tab')[map[page]].classList.add('active');
+  if(page==='prompts') renderPrompts();
+  if(page==='sops') renderSOPs();
+  if(page==='workflows') renderWorkflows();
+}
+
+function openM(id){ document.getElementById('m-'+id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeM(id){ document.getElementById('m-'+id).classList.remove('open'); document.body.style.overflow=''; }
+document.querySelectorAll('.overlay').forEach(el=>el.addEventListener('click',e=>{ if(e.target===el){ el.classList.remove('open'); document.body.style.overflow=''; } }));
+
+const v = id => (document.getElementById(id)?.value||'').trim();
+function cpOut(id){ navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>toast('📋 Đã copy!')); }
+
+const BUILDERS = {
+  sop: ()=>`Bạn là chuyên gia xây dựng SOP cho SME Việt Nam.
+
+Tạo SOP hoàn chỉnh:
+TÊN: ${v('sop-name')}
+BỘ PHẬN: ${v('sop-dept')}
+MỤC TIÊU: ${v('sop-goal')}
+TẦN SUẤT: ${v('sop-freq')}
+OWNER: ${v('sop-owner')}
+KPI: ${v('sop-kpi')}
+BỐI CẢNH: ${v('sop-desc')}
+
+Tạo SOP đầy đủ với:
+## 1. THÔNG TIN CHUNG
+## 2. ĐIỀU KIỆN ĐẦU VÀO
+## 3. CÁC BƯỚC THỰC HIỆN (chi tiết từng bước, ai làm, mất bao lâu, công cụ gì)
+## 4. CHECKLIST KIỂM TRA ✅
+## 5. XỬ LÝ TÌNH HUỐNG BẤT THƯỜNG
+## 6. KPI & ĐO LƯỜNG HIỆU QUẢ
+## 7. TÀI LIỆU LIÊN QUAN
+
+Viết tiếng Việt, rõ ràng, áp dụng được ngay.`,
+
+  content: ()=>{
+    const chs=[];
+    ['fb','yt','tt','em','zl'].forEach(c=>{if(document.getElementById('ch-'+c)?.checked) chs.push({fb:'Facebook',yt:'YouTube',tt:'TikTok',em:'Email',zl:'Zalo'}[c]);});
+    return `Bạn là Content Strategist và Copywriter hàng đầu cho SME Việt Nam.
+
+THƯƠNG HIỆU: ${v('cf-brand')}
+CHỦ ĐỀ: ${v('cf-topic')}
+MỤC TIÊU: ${v('cf-goal')}
+ĐỐI TƯỢNG: ${v('cf-audience')}
+TONE: ${v('cf-tone')}
+KÊNH: ${chs.join(', ')||'Facebook'}
+
+Tạo content đầy đủ cho từng kênh được chọn:
+${chs.includes('Facebook')?'\n### 📘 FACEBOOK POST\n- Hook mạnh dòng đầu\n- Nội dung 300-500 từ\n- Emoji chiến lược\n- CTA rõ ràng\n- 5-8 hashtags\n':''}${chs.includes('YouTube')?'\n### 🎬 YOUTUBE\n- Tiêu đề video (60 ký tự)\n- Hook 30 giây đầu\n- Outline 5-7 điểm chính\n- Description + Tags\n':''}${chs.includes('TikTok')?'\n### 🎵 TIKTOK SCRIPT (60s)\n- Hook 3 giây\n- Nội dung 45 giây\n- CTA 12 giây\n- Caption + Hashtags\n':''}${chs.includes('Email')?'\n### 📧 EMAIL\n- Subject A/B\n- Preview text\n- Body email đầy đủ\n- CTA\n':''}${chs.includes('Zalo')?'\n### 💬 ZALO\n- Tin nhắn OA (<300 ký tự)\n- Quick Reply buttons\n':''}
+
+Viết tiếng Việt tự nhiên, engaging.`;
+  },
+
+  email: ()=>`Bạn là Email Marketing Specialist cho SME Việt Nam.
+
+DOANH NGHIỆP: ${v('em-brand')}
+SẢN PHẨM: ${v('em-product')}
+LOẠI CHUỖI: ${v('em-type')}
+SỐ EMAIL: ${v('em-count')}
+MỤC TIÊU: ${v('em-goal')}
+KHÁCH HÀNG: ${v('em-audience')}
+
+Tạo từng email hoàn chỉnh theo format:
+---EMAIL [SỐ] — [TÊN] (Gửi: [NGÀY/TIMING])---
+MỤC TIÊU: [1 câu]
+SUBJECT A: [...] | SUBJECT B: [...]
+PREVIEW TEXT: [...]
+NỘI DUNG: [full body, personalized]
+CTA: [text + placeholder URL]
+METRIC TARGET: [open rate / click rate]
+---
+
+Đảm bảo narrative xuyên suốt, progressive CTA, không spam words.`,
+
+  crm: ()=>`Bạn là CRM Expert và Sales Coach cho SME Việt Nam.
+
+KHÁCH HÀNG: ${v('crm-name')}
+GIAI ĐOẠN: ${v('crm-stage')}
+THÔNG TIN: ${v('crm-info')}
+SẢN PHẨM: ${v('crm-product')}
+CẦN HỖ TRỢ: ${v('crm-need')}
+
+Cung cấp:
+## 🎯 PHÂN TÍCH LEAD
+- Điểm tiềm năng: X/10 (giải thích)
+- Buyer persona
+- Động lực mua chính
+- Rào cản dự đoán
+
+## 📋 CHIẾN LƯỢC TIẾP CẬN
+- Approach tốt nhất cho giai đoạn này
+- Điều KHÔNG nên làm
+- Timing khuyến nghị
+
+## 💬 NỘI DUNG: ${v('crm-need')}
+[Viết đầy đủ nội dung được yêu cầu]
+
+## ⚡ NEXT ACTIONS
+1. Trong 24h: [...]
+2. Tuần này: [...]
+3. Trigger chuyển stage: [...]
+
+## 🔄 FOLLOW-UP SCHEDULE
+D+1 / D+3 / D+7: [Action cụ thể]`,
+
+  webinar: ()=>`Bạn là Webinar Strategist và Sales Funnel Expert cho SME Việt Nam.
+
+CHỦ ĐỀ: ${v('wb-topic')}
+OFFER: ${v('wb-offer')}
+THỜI LƯỢNG: ${v('wb-duration')}
+ĐỐI TƯỢNG: ${v('wb-audience')}
+USP: ${v('wb-usp')}
+CẦN TẠO: ${v('wb-need')}
+
+${v('wb-need').includes('Toàn bộ')||v('wb-need').includes('Outline')?`## 📐 WEBINAR OUTLINE
+PRE-FRAME (5-10p): [Script chào hỏi + rapport + set expectations]
+NỘI DUNG CHÍNH: [3-5 modules, mỗi module có teaching + story + takeaway]
+PITCH (15-20p): [Problem→Agitate→Solution→Proof→Offer→CTA]
+Q&A & CLOSE: [Script xử lý câu hỏi + close mạnh]
+`:''}${v('wb-need').includes('Email trước')||v('wb-need').includes('Toàn bộ')?`## 📧 EMAIL TRƯỚC WEBINAR
+E1 (Ngay đăng ký): Confirm + Chuẩn bị
+E2 (D-3): Tease + Kỳ vọng
+E3 (D-1): Reminder + Quick win
+E4 (H-1): LIVE NOW + Link
+[Viết đầy đủ từng email]
+`:''}${v('wb-need').includes('follow-up')||v('wb-need').includes('Toàn bộ')?`## 📧 EMAIL FOLLOW-UP
+Người THAM DỰ: E1(1h) E2(D1) E3(D3) E4(D5) E5(D7)
+Người KHÔNG tham dự: E1(2h) E2(D2)
+[Viết đầy đủ từng email]
+`:''}${v('wb-need').includes('Landing')?`## 🖥️ LANDING PAGE COPY
+Headline + Subheadline
+Bullets lợi ích
+Social proof
+Form copy
+`:''}
+Tất cả viết tiếng Việt, phù hợp văn hoá mua hàng Việt Nam.`,
+
+  sales: ()=>`Bạn là Sales Coach hàng đầu cho SME Việt Nam.
+
+SẢN PHẨM: ${v('ss-product')}
+GIÁ: ${v('ss-price')}
+KÊNH: ${v('ss-channel')}
+KHÁCH HÀNG: ${v('ss-target')}
+PAIN POINTS: ${v('ss-pain')}
+TỪ CHỐI: ${v('ss-objection')}
+LOẠI SCRIPT: ${v('ss-type')}
+
+${v('ss-type').includes('đầy đủ')?`## 📞 SCRIPT ĐẦY ĐỦ — ${v('ss-channel').toUpperCase()}
+PHASE 1 — MỞ ĐẦU (30s): [Script tự nhiên, không như đọc]
+PHASE 2 — DISCOVERY: [5 câu hỏi khám phá pain point]
+PHASE 3 — PRESENT: [Trình bày solution liên kết pain]
+PHASE 4 — XỬ LÝ TỪ CHỐI: [Xử lý "${v('ss-objection')}"]
+PHASE 5 — CHỐT DEAL: [Kỹ thuật chốt phù hợp]
+`:''}
+## 💬 XỬ LÝ: "${v('ss-objection')}"
+Feel-Felt-Found + 3 biến thể + Reframe question
+
+${v('ss-type').includes('chốt')||v('ss-type').includes('đầy đủ')?`## 🎯 CLOSING TECHNIQUES
+Assumptive / Alternative / Urgency / Summary close
+[Scripts cụ thể cho từng technique]
+`:''}
+${v('ss-type').includes('Follow')?`## 🔄 FOLLOW-UP SCRIPTS
+D+1 / D+3 / D+7: [Message/Script/Email cụ thể]
+`:''}
+GOLDEN RULES cho ${v('ss-channel')}: [5 nguyên tắc vàng]
+Tiếng Việt tự nhiên, không cứng nhắc.`,
+};
+
+const BTN_MAP = {sop:'sop-btn',content:'cf-btn',email:'em-btn',crm:'crm-btn',webinar:'wb-btn',sales:'ss-btn'};
+const OUT_MAP = {sop:'sop-out',content:'cf-out',email:'em-out',crm:'crm-out',webinar:'wb-out',sales:'ss-out'};
+const OA_MAP  = {sop:'sop-oa',content:'cf-oa',email:'em-oa',crm:'crm-oa',webinar:'wb-oa',sales:'ss-oa'};
+const LBL_MAP = {sop:'✨ Tạo SOP',content:'✨ Tạo Content',email:'✨ Tạo Email Sequence',crm:'✨ Phân tích & Tư vấn',webinar:'✨ Tạo Webinar Plan',sales:'✨ Tạo Sales Script'};
+
+async function run(skill){
+  const prompt = BUILDERS[skill]?.();
+  if(!prompt) return;
+  const btn = document.getElementById(BTN_MAP[skill]);
+  const out = document.getElementById(OUT_MAP[skill]);
+  const oa  = document.getElementById(OA_MAP[skill]);
+
+  btn.disabled=true;
+  btn.innerHTML='<span class="spin"></span> Đang xử lý...';
+  out.classList.add('show');
+  out.textContent='⏳ AI đang tạo nội dung...';
+  oa.classList.remove('show');
+
+  try {
+    await new Promise(r=>setTimeout(r,800));
+    out.textContent=`📋 PROMPT SẴN SÀNG — Copy và paste vào Claude.ai để nhận kết quả:\n\n${'─'.repeat(56)}\n\n${prompt}\n\n${'─'.repeat(56)}\n\n💡 Hoặc cấu hình Claude API trong GAS_URL để chạy trực tiếp.`;
+    oa.classList.add('show');
+    toast('✅ Prompt đã sẵn sàng!');
+  } catch(e) {
+    out.textContent='❌ Lỗi: '+e.message;
+    toast('Lỗi!','err');
+  }
+  btn.disabled=false;
+  btn.innerHTML=LBL_MAP[skill];
+}
+
+async function saveSheets(skill){
+  const btn = event.currentTarget || event.target;
+  const origText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Đang lưu...';
+
+  let payload = {};
+  if(skill === 'sop'){
+    const now = new Date();
+    payload = {
+      sheet: 'GENERATED_DOCUMENTS',
+      action: 'saveSheets',
+      row: [
+        'sop-' + Date.now(),
+        'SOP Builder',
+        '',
+        v('sop-name') + ' | ' + v('sop-dept'),
+        v('sop-name'),
+        '',
+        'generated',
+        now.toLocaleString('vi-VN')
+      ]
+    };
+  }
+
+  console.log('[saveSheets] payload:', JSON.stringify(payload, null, 2));
+
+  try {
+    await fetch(GAS_URL, {
+      method:  'POST',
+      mode:    'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body:    JSON.stringify(payload)
+    });
+    console.log('[saveSheets] request sent (no-cors — cannot read response)');
+    toast('💾 Đã gửi lên Sheets — kiểm tra tab để xác nhận!');
+  } catch(e) {
+    console.error('[saveSheets] fetch error:', e);
+    toast('❌ Lỗi kết nối: ' + e.message, 'err');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = origText;
+}
+
+function toast(msg,type='ok'){
+  const el=document.createElement('div');
+  el.className=`toast-item ${type}`;
+  el.innerHTML=`<span>${type==='ok'?'✅':'❌'}</span> ${msg}`;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(()=>el.remove(),3200);
+}
+
+renderSkills('skills-dash');
+renderSkills('skills-page');
+</script>
+</body>
+</html>
